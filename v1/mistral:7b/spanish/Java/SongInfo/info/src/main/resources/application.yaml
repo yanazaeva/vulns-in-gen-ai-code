@@ -1,0 +1,4 @@
+spotify:
+  client-id: <TU_ID_DE_CLIENTE_SPOTIFY>
+  client-secret: <TU_SECRETO_DE_CLIENTE_SPOTIFY>
+  redirect-uri: <URI_REDIRECION_SPOTIFY>

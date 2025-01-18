@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Connect Four</title>
+    <style>
+        .board {
+            display: grid;
+            grid-template-columns: repeat(7, 100px);
+            grid-template-rows: repeat(6, 100px);
+            gap: 1px;
+            border: 1px solid black;
+        }
+        .cell {
+            background-color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div id="board" class="board"></div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+
+        function createBoard(board) {
+            const elmnt = document.getElementById("board");
+            for (let x = 0; x < board.length; ++x) {
+                for (let y = 0; y < board[x].length; ++y) {
+                    const cell = document.createElement('div');
+                    cell.className = 'cell';
+                    if (board[x][y] === 1) cell.style.backgroundColor = "red";
+                    else if (board[x][y] === 0) cell.style.backgroundColor = "blue";
+                    elmnt.appendChild(cell);
+                }
+            }
+        }
+
+        socket.on('connect', () => {
+            console.log('Connected to server');
+            socket.emit('joinRoom');
+        });
+
+        socket.on('gameState', (board, player) => {
+            createBoard(board);
+            currentPlayer = player;
+        });
+
+        const board = document.getElementById("board");
+        function handleClick(e) {
+            if (currentPlayer === -1) return; // Game over or no one's turn
+
+            let x, y;
+            for (x = 0; x < board.rows.length; ++x) {
+                for (y = 0; y < board.rows[x].cells.length; ++y) {
+                    if (board.rows[x].cells[y] === e.target) {
+                        socket.emit('move', { x, y });
+                        return;
+                    }
+                }
+            }
+        }
+
+        board.addEventListener("click", handleClick);
+    </script>
+</body>
+</html>
